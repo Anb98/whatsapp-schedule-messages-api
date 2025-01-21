@@ -9,6 +9,7 @@ import { createMessageRouter } from "./routes/message.routes";
 import { SocketService } from "./services/socket.service";
 import { WhatsappService } from "./services/whatsapp.service";
 import { MessageScheduler } from "./scheduler/message.scheduler";
+import { mainRouter } from "./routes/main.routes";
 
 async function startServer() {
   const app = new Koa();
@@ -24,6 +25,9 @@ async function startServer() {
   app.use(bodyParser());
 
   // Routes
+  app.use(mainRouter.routes());
+  app.use(mainRouter.allowedMethods());
+
   const messageRouter = createMessageRouter(whatsappService, messageScheduler);
   app.use(messageRouter.routes());
   app.use(messageRouter.allowedMethods());
