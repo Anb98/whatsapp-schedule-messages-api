@@ -1,5 +1,7 @@
 FROM node:21-alpine3.20 AS builder
 WORKDIR /app
+ENV PORT=3000
+
 
 # Installs latest Chromium (92) package.
 RUN apk add --no-cache \
@@ -23,5 +25,5 @@ RUN yarn install --frozen-lockfile
 COPY . .
 RUN yarn build
 
-EXPOSE 3000
+EXPOSE ${PORT}
 CMD ["yarn", "start"]
