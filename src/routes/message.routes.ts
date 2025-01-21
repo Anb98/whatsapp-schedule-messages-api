@@ -4,6 +4,7 @@ import { Context } from "koa";
 import { MessageScheduler } from "../scheduler/message.scheduler";
 import { WhatsappService } from "../services/whatsapp.service";
 import { SendMessageSchema, sendMessageSchema } from "../dto/message.dto";
+import logger from "../services/logger.service";
 
 export const createMessageRouter = (
   whatsAppService: WhatsappService,
@@ -29,6 +30,7 @@ export const createMessageRouter = (
       const result = await whatsAppService.sendMessage(contacts, message);
       ctx.body = { message: "Message sent", result };
     } catch (error) {
+      logger.error(error);
       ctx.status = 400;
       ctx.body = { error };
     }
@@ -40,9 +42,15 @@ export const createMessageRouter = (
   });
 
   router.get("/contacts", async (ctx: Context) => {
-    const contacts = await whatsAppService.getContacts();
+    try {
+      const contacts = await whatsAppService.getContacts();
 
-    ctx.body = { contacts };
+      ctx.body = { contacts };
+    } catch (error) {
+      logger.error(error);
+      ctx.status = 400;
+      ctx.body = { error };
+    }
   });
 
   return router;

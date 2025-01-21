@@ -26,25 +26,29 @@ export class WhatsappService {
   }
 
   public async init() {
-    logger.log(loggerLevels.info, `Initializing Whatsapp service`);
-    this.client.initialize();
+    try {
+      logger.log(loggerLevels.info, `Initializing Whatsapp service`);
+      await this.client.initialize();
 
-    this.client.on("ready", () => {
-      logger.log(loggerLevels.info, `Whatsapp account logged in`);
-      this.authStatus = AuthStatus.LOGGED_IN;
-      this.socketService.emit("auth", { status: this.authStatus });
-      this.socketService.emitOnConnection("auth", {
-        status: this.authStatus,
+      this.client.on("ready", () => {
+        logger.log(loggerLevels.info, `Whatsapp account logged in`);
+        this.authStatus = AuthStatus.LOGGED_IN;
+        this.socketService.emit("auth", { status: this.authStatus });
+        this.socketService.emitOnConnection("auth", {
+          status: this.authStatus,
+        });
       });
-    });
 
-    this.client.on("qr", (qr) => {
-      logger.log(loggerLevels.info, "QR Code received");
-      this.socketService.emit("qr", { qrCode: qr });
-      this.socketService.emitOnConnection("qr", {
-        qrCode: qr,
+      this.client.on("qr", (qr) => {
+        logger.log(loggerLevels.info, "QR Code received");
+        this.socketService.emit("qr", { qrCode: qr });
+        this.socketService.emitOnConnection("qr", {
+          qrCode: qr,
+        });
       });
-    });
+    } catch (error) {
+      logger.error("Error initializing Whatsapp service", error);
+    }
   }
 
   public async logout() {
