@@ -16,7 +16,11 @@ export class WhatsappService {
       authStrategy: new LocalAuth(),
       puppeteer: {
         headless: true,
-        args: ["--disable-setuid-sandbox", "--unhandled-rejections=strict"],
+        args: [
+          "--no-sandbox",
+          "--disable-setuid-sandbox",
+          "--unhandled-rejections=strict",
+        ],
       },
     });
   }

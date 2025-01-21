@@ -3,7 +3,6 @@ WORKDIR /app
 ENV PORT=3000
 
 
-# Installs latest Chromium (92) package.
 RUN apk add --no-cache \
     chromium \
     nss \
@@ -18,21 +17,13 @@ RUN apk add --no-cache \
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true 
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-# Add user so we don't need --no-sandbox.
-RUN addgroup -S pptruser && adduser -S -G pptruser pptruser \
-    && mkdir -p /home/pptruser/Downloads /app \
-    && chown -R pptruser:pptruser /home/pptruser \
-    && chown -R pptruser:pptruser /app
-
-RUN corepack enable && corepack prepare yarn@stable --activate
+# Puppeteer v13.5.0 works with Chromium 100.
+RUN yarn add puppeteer@13.5.0
 
 COPY package.json yarn.lock .yarnrc.yml ./
 RUN yarn install --frozen-lockfile
 COPY . .
 RUN yarn build
-
-# Run everything after as non-privileged user.
-USER pptruser
 
 EXPOSE ${PORT}
 CMD ["yarn", "start"]
