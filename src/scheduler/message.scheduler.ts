@@ -1,5 +1,6 @@
 import schedule from "node-schedule";
 import { WhatsappService } from "../services/whatsapp.service";
+import logger, { loggerLevels } from "../services/logger.service";
 
 export class MessageScheduler {
   private whatsappService: WhatsappService;
@@ -16,12 +17,14 @@ export class MessageScheduler {
     schedule.scheduleJob(datetime, async () => {
       try {
         await this.whatsappService.sendMessage(phoneNumbers, message);
-        console.log(
-          `Message sent to ${phoneNumbers.join(", ")} at ${datetime}`
+        logger.log(
+          loggerLevels.info,
+          `Message sent to ${phoneNumbers.join(", ")}`
         );
       } catch (error) {
-        console.error(
-          `Error sending message to ${phoneNumbers.join(", ")} at ${datetime}`
+        logger.error(
+          `Error sending message to ${phoneNumbers.join(", ")}`,
+          error
         );
       }
     });

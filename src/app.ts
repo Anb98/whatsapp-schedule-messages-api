@@ -10,6 +10,7 @@ import { SocketService } from "./services/socket.service";
 import { WhatsappService } from "./services/whatsapp.service";
 import { MessageScheduler } from "./scheduler/message.scheduler";
 import { mainRouter } from "./routes/main.routes";
+import logger, { loggerLevels } from "./services/logger.service";
 
 async function startServer() {
   const app = new Koa();
@@ -34,8 +35,8 @@ async function startServer() {
 
   // Start server
   server.listen(process.env.PORT, () => {
-    console.log(`Server running on port ${process.env.PORT}`);
+    logger.log(loggerLevels.info, `Server running on port ${process.env.PORT}`);
   });
 }
 
-startServer().catch(console.error);
+startServer().catch((error) => logger.error("Error starting server", error));

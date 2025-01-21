@@ -1,5 +1,6 @@
 import { Client, LocalAuth } from "whatsapp-web.js";
 import { SocketService } from "./socket.service";
+import logger, { loggerLevels } from "./logger.service";
 
 enum AuthStatus {
   LOGGED_IN = "logged_in",
@@ -25,9 +26,11 @@ export class WhatsappService {
   }
 
   public async init() {
+    logger.log(loggerLevels.info, `Initializing Whatsapp service`);
     this.client.initialize();
 
     this.client.on("ready", () => {
+      logger.log(loggerLevels.info, `Whatsapp account logged in`);
       this.authStatus = AuthStatus.LOGGED_IN;
       this.socketService.emit("auth", { status: this.authStatus });
       this.socketService.emitOnConnection("auth", {
@@ -36,6 +39,7 @@ export class WhatsappService {
     });
 
     this.client.on("qr", (qr) => {
+      logger.log(loggerLevels.info, "QR Code received");
       this.socketService.emit("qr", { qrCode: qr });
       this.socketService.emitOnConnection("qr", {
         qrCode: qr,
@@ -44,16 +48,13 @@ export class WhatsappService {
   }
 
   public async logout() {
+    logger.log(loggerLevels.info, `Whatsapp account logged out`);
     this.authStatus = AuthStatus.LOGGED_OUT;
     await this.client.logout();
     this.socketService.emit("auth", { status: this.authStatus });
     this.socketService.emitOnConnection("auth", {
       status: this.authStatus,
     });
-  }
-
-  public async getLoggedStatus() {
-    return this.authStatus;
   }
 
   public async getContacts() {
