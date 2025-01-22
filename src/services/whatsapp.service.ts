@@ -1,6 +1,7 @@
 import { Client, LocalAuth } from "whatsapp-web.js";
 import { SocketService } from "./socket.service";
 import logger, { loggerLevels } from "./logger.service";
+import { ContactType } from "../entity/contact";
 
 enum AuthStatus {
   LOGGED_IN = "logged_in",
@@ -74,33 +75,40 @@ export class WhatsappService {
           !contact.id._serialized.includes("@lid")
       )
       .map((contact) => ({
-        name: contact.name,
+        name: contact.name || "",
         chatId: contact.id._serialized,
-        type: contact.isGroup ? "group" : "person",
+        type: contact.isGroup ? ContactType.GROUP : ContactType.PERSON,
       }));
   }
 
-  public async sendMessage(number: string | string[], message: string) {
+  public async sendMessage(chatIds: string[], message: string) {
     if (this.authStatus !== AuthStatus.LOGGED_IN)
       throw new Error("User is not logged in");
 
-    if (Array.isArray(number))
-      return Promise.allSettled(
-        number.map(async (num) => {
-          const chatId = num.includes("@") ? num : await this.getChatId(num);
-
-          return this.client.sendMessage(chatId, message);
-        })
-      );
-
-    const chatId = number.includes("@") ? number : await this.getChatId(number);
-    return this.client.sendMessage(chatId, message);
+    return await Promise.allSettled(
+      chatIds.map((chatId) => this.client.sendMessage(chatId, message))
+    );
   }
 
-  private async getChatId(number: string) {
+  public async getChatId(number: string) {
+    if (this.authStatus !== AuthStatus.LOGGED_IN)
+      throw new Error("User is not logged in");
+
+    if (number.includes("@")) return number;
+
     const chatId = await this.client.getNumberId(number);
     if (!chatId) throw new Error(`Number ${number} not found`);
 
     return chatId._serialized;
+  }
+
+  public async getContactId(chatId: string) {
+    if (this.authStatus !== AuthStatus.LOGGED_IN)
+      throw new Error("User is not logged in");
+
+    const contact = await this.client.getContactById(chatId);
+    if (!contact) throw new Error(`Contact ${chatId} not found`);
+
+    return contact;
   }
 }
