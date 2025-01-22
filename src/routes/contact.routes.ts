@@ -19,5 +19,16 @@ export const createContactRouter = (contactService: ContactService) => {
     }
   });
 
+  router.post("/sync", async (ctx: Context) => {
+    try {
+      await contactService.syncContacts();
+      ctx.body = { success: true };
+    } catch (error) {
+      logger.error(error);
+      ctx.status = 400;
+      ctx.body = { error };
+    }
+  });
+
   return router;
 };
