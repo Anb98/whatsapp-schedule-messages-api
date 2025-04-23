@@ -16,8 +16,8 @@ export class MessageService {
     this.syncPendingMessages();
   }
 
-  public async getMessages(): Promise<Message[]> {
-    return this.messageRepository.find();
+  public async getMessages(skip: number, take: number): Promise<Message[]> {
+    return this.messageRepository.find({ skip, take });
   }
 
   public async handleMessage(data: SendMessageSchema) {

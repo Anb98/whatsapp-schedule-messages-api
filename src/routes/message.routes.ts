@@ -26,7 +26,9 @@ export const createMessageRouter = (messageService: MessageService) => {
 
   router.get("/", async (ctx: Context) => {
     try {
-      const messages = await messageService.getMessages();
+      const skip = Number(ctx.query.skip) || 0;
+      const take = Number(ctx.query.take) || 10;
+      const messages = await messageService.getMessages(skip, take);
       ctx.body = { messages };
     } catch (error) {
       logger.error(error);
