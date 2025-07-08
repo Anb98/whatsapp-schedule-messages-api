@@ -6,6 +6,7 @@ export enum Status {
   SENT = "sent",
   FAILED = "failed",
   PARTIAL = "partial",
+  CANCELED = "canceled",
 }
 
 @Entity()

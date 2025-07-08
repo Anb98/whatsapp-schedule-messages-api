@@ -36,5 +36,22 @@ export const createMessageRouter = (messageService: MessageService) => {
     }
   });
 
+  router.delete("/:messageId", async (ctx: Context) => {
+    try {
+      const messageId = Number(ctx.params.messageId);
+      if (isNaN(messageId)) {
+        ctx.status = 400;
+        ctx.body = { error: "Invalid Message ID" };
+        return;
+      }
+      await messageService.cancelMessage(messageId);
+      ctx.body = { success: true };
+    } catch (error) {
+      logger.error(error);
+      ctx.status = 400;
+      ctx.body = { error: error instanceof Error ? error.message : error };
+    }
+  });
+
   return router;
 };

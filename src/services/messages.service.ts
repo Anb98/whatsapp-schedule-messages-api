@@ -93,6 +93,21 @@ export class MessageService {
     });
   }
 
+  public async cancelMessage(messageId: number) {
+    await this.messageRepository.findOneByOrFail({
+      id: messageId,
+      status: Status.PENDING,
+    });
+
+    const result = await this.messageRepository.update(messageId, {
+      status: Status.CANCELED,
+    });
+    logger.log(loggerLevels.info, `Message with ID: ${messageId} canceled`);
+    return result;
+
+    throw new Error("Message cannot be canceled");
+  }
+
   private async syncPendingMessages() {
     const pendingMessages = await this.messageRepository.find({
       where: { status: Status.PENDING },
