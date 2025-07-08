@@ -11,7 +11,7 @@ import { createContactRouter } from "./routes/contact.routes";
 import { createAuthRouter } from "./routes/auth.routes";
 import { SocketService } from "./services/socket.service";
 import { WhatsappService } from "./services/whatsapp.service";
-import { mainRouter } from "./routes/main.routes";
+import { createMainRouter } from "./routes/main.routes";
 import logger, { loggerLevels } from "./services/logger.service";
 import { ContactService } from "./services/contact.service";
 import { AppDataSource } from "./database";
@@ -48,6 +48,7 @@ async function startServer() {
   app.use(authRouter.allowedMethods());
 
   // Routes
+  const mainRouter = createMainRouter(whatsappService);
   app.use(mainRouter.routes());
   app.use(mainRouter.allowedMethods());
 

@@ -1,12 +1,16 @@
 import Router from "@koa/router";
 import { Context } from "koa";
+import { WhatsappService } from "../services/whatsapp.service";
 
-const router = new Router({
-  prefix: "/api",
-});
+export const createMainRouter = (whatsappService: WhatsappService) => {
+  const router = new Router({
+    prefix: "/api",
+  });
 
-router.get("/ping", async (ctx: Context) => {
-  ctx.body = { message: "pong" };
-});
+  router.get("/ping", async (ctx: Context) => {
+    const authStatus = whatsappService.getAuthStatus();
+    ctx.body = { status: authStatus };
+  });
 
-export const mainRouter = router;
+  return router;
+};

@@ -17,7 +17,11 @@ export class MessageService {
   }
 
   public async getMessages(skip: number, take: number): Promise<Message[]> {
-    return this.messageRepository.find({ skip, take });
+    return this.messageRepository.find({
+      skip,
+      take,
+      order: { createdAt: "DESC" },
+    });
   }
 
   public async handleMessage(data: SendMessageSchema) {

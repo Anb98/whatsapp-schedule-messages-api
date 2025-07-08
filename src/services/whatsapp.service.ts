@@ -3,9 +3,10 @@ import { SocketService } from "./socket.service";
 import logger, { loggerLevels } from "./logger.service";
 import { ContactType } from "../entity/contact";
 
-enum AuthStatus {
+export enum AuthStatus {
   LOGGED_IN = "logged_in",
   LOGGED_OUT = "logged_out",
+  LOGGED_ERROR = "logged_error",
 }
 
 export class WhatsappService {
@@ -41,6 +42,7 @@ export class WhatsappService {
       });
 
       this.client.on("qr", (qr) => {
+        this.authStatus = AuthStatus.LOGGED_OUT;
         logger.log(loggerLevels.info, "QR Code received");
         this.socketService.emit("qr", { qrCode: qr });
         this.socketService.emitOnConnection("qr", {
@@ -48,6 +50,7 @@ export class WhatsappService {
         });
       });
     } catch (error) {
+      this.authStatus = AuthStatus.LOGGED_ERROR;
       logger.error("Error initializing Whatsapp service", error);
     }
   }
@@ -110,5 +113,9 @@ export class WhatsappService {
     if (!contact) throw new Error(`Contact ${chatId} not found`);
 
     return contact;
+  }
+
+  public getAuthStatus() {
+    return this.authStatus;
   }
 }
