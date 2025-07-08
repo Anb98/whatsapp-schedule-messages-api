@@ -70,6 +70,13 @@ export class MessageService {
   public scheduleMessage(message: Message): void {
     schedule.scheduleJob(message.scheduledAt!, async () => {
       try {
+        const messageInDB = await this.messageRepository.findOneBy({
+          id: message.id,
+          status: Status.PENDING,
+        });
+
+        if (!messageInDB) return;
+
         const sendResult = await this.whatsappService.sendMessage(
           message.contacts.map((contact) => contact.chatId),
           message.text
