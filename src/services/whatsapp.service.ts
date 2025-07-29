@@ -17,12 +17,7 @@ export class WhatsappService {
     this.client = new Client({
       authStrategy: new LocalAuth(),
       puppeteer: {
-        headless: true,
-        args: [
-          "--no-sandbox",
-          "--disable-setuid-sandbox",
-          "--unhandled-rejections=strict",
-        ],
+        browserWSEndpoint: process.env.BROWSER_WS_ENDPOINT,
       },
     });
   }
