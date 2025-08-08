@@ -20,9 +20,12 @@ export class WhatsappService {
         headless: true,
         args: [
           "--no-sandbox",
+          "--disable-gpu",
           "--disable-setuid-sandbox",
+          "--disable-dev-shm-usage",
           "--unhandled-rejections=strict",
         ],
+        dumpio: true,
       },
     });
 
