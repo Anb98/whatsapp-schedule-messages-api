@@ -17,12 +17,19 @@ export class WhatsappService {
     this.client = new Client({
       authStrategy: new LocalAuth(),
       puppeteer: {
-        browserWSEndpoint: process.env.BROWSER_WS_ENDPOINT,
+        headless: true,
+        args: [
+          "--no-sandbox",
+          "--disable-setuid-sandbox",
+          "--unhandled-rejections=strict",
+        ],
       },
     });
+
+    this.init();
   }
 
-  public async init() {
+  private async init() {
     try {
       logger.log(loggerLevels.info, `Initializing Whatsapp service`);
       await this.client.initialize();

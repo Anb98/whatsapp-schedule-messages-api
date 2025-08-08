@@ -33,7 +33,6 @@ async function startServer() {
 
   const socketService = new SocketService(server);
   const whatsappService = new WhatsappService(socketService);
-  whatsappService.init();
 
   // Contact initialization
   const contactRepository = AppDataSource.getRepository(Contact);
